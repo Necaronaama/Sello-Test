@@ -1,0 +1,1 @@
+ALTER TABLE user ADD COLUMN brand_name VARCHAR(100);

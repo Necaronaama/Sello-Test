@@ -1,0 +1,1050 @@
+/* Estilos para la página pública de dispositivos */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --error-color: #e74c3c;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --border-color: #e9ecef;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.logo i {
+    font-size: 3rem;
+    color: #f1c40f;
+}
+
+.logo h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Main Content */
+    .main-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Centra verticalmente también */
+        width: 100%; /* Asegura que ocupe todo el ancho */
+        padding: 0 20px; /* Ajusta el padding horizontal para móviles */
+    }
+
+.device-card {
+    background: var(--card-background);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+.device-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.loading i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.loading p {
+    font-size: 1.1rem;
+}
+
+/* Device Content */
+.device-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.device-icon {
+    background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.device-title h2 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.device-category {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Device Details */
+.device-details {
+    margin-bottom: 30px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.detail-row:hover {
+    background-color: #f8f9fa;
+    margin: 0 -20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.detail-value {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-align: right;
+    flex: 1;
+}
+
+/* Sections */
+.comments-section,
+.regulatory-section,
+.files-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+}
+
+.comments-section h3,
+.regulatory-section h3,
+.files-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.comments-section p,
+.regulatory-section p {
+    background: var(--background-color);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    line-height: 1.6;
+}
+
+.file-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* Error Content */
+.error-content {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.error-icon {
+    color: var(--error-color);
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.error-content h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.error-content p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+}
+
+.footer p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
+    }
+    
+    .device-card {
+        padding: 25px;
+        border-radius: 15px;
+        max-width: 100%; /* Asegura que ocupe el 100% del ancho disponible */
+        margin: 0 auto; /* Centra la tarjeta */
+        max-width: 100%; /* Asegura que ocupe el 100% del ancho disponible */
+        margin: 0 auto; /* Centra la tarjeta */
+    }
+    
+    .device-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .device-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .device-title h2 {
+        font-size: 1.5rem;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .detail-value {
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
+    
+    .logo i {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .device-card {
+        padding: 20px;
+    }
+    
+    .logo h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* Animaciones */
+.device-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detail-row {
+    animation: slideInLeft 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.detail-row:nth-child(1) { animation-delay: 0.1s; }
+.detail-row:nth-child(2) { animation-delay: 0.2s; }
+.detail-row:nth-child(3) { animation-delay: 0.3s; }
+.detail-row:nth-child(4) { animation-delay: 0.4s; }
+.detail-row:nth-child(5) { animation-delay: 0.5s; }
+.detail-row:nth-child(6) { animation-delay: 0.6s; }
+.detail-row:nth-child(7) { animation-delay: 0.7s; }
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.back-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-2px);
+}
+
+/* Estilos para el layout de dos columnas */
+.content-layout {
+    display: flex;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1200px;
+    align-items: flex-start;
+    margin: 0 auto;
+    justify-content: flex-start;
+    padding: 0 3rem;
+}
+
+.device-info-column {
+    flex: 2.3;
+    min-width: 0;
+}
+
+.device-image-column {
+    flex: 1.3;
+    margin-left: 0;
+    padding: 0 5rem;
+}
+
+.image-card {
+    background: var(--card-background);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    height: fit-content;
+}
+
+.image-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+}
+
+.image-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.image-header h3 {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.image-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.no-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--background-color);
+    color: var(--text-secondary);
+    width: 100%;
+    height: 300px;
+    border: 2px dashed var(--border-color);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.no-image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.6;
+}
+
+.no-image-placeholder p {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+#deviceImage {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    display: block;
+    z-index: 2;
+    position: relative;
+}
+
+#deviceImage:hover {
+    transform: scale(1.02);
+}
+
+/* Cuando la imagen se carga correctamente, ocultar el placeholder */
+#deviceImage.loaded + .no-image-placeholder {
+    display: none;
+}
+
+/* Responsive para el layout de dos columnas */
+@media (max-width: 1024px) {
+    .content-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .device-image-column {
+        flex: none;
+        width: 100%;
+    }
+    
+    .image-card {
+        padding: 25px;
+    }
+    
+    .image-content {
+        min-height: 250px;
+    }
+    
+    .no-image-placeholder {
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        max-width: none;
+        padding: 15px;
+    }
+    
+    .content-layout {
+        gap: 15px;
+    }
+    
+    .image-card {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .image-content {
+        min-height: 200px;
+    }
+    
+    .no-image-placeholder {
+        height: 200px;
+    }
+    
+    .no-image-placeholder i {
+        font-size: 2.5rem;
+    }
+    
+    .no-image-placeholder p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .image-card {
+        padding: 15px;
+    }
+    
+    .image-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .image-content {
+        min-height: 180px;
+    }
+    
+    .no-image-placeholder {
+        height: 180px;
+    }
+    
+    .no-image-placeholder i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .no-image-placeholder p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Estilos mejorados para la sección de archivos */
+.files-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--background-color);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.file-item:hover {
+    background: #f1f3f4;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
+}
+
+.file-item > i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    min-width: 40px;
+    text-align: center;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.file-type {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.file-details {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.file-date,
+.file-size {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.file-action-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.download-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.download-btn:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.preview-btn {
+    background: var(--success-color);
+    color: white;
+}
+
+.preview-btn:hover {
+    background: #219a52;
+    transform: translateY(-1px);
+}
+
+.no-files-message {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 30px;
+    background: var(--background-color);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+/* Iconos específicos por tipo de archivo */
+.fa-file-pdf {
+    color: #dc3545;
+}
+
+.fa-file-image {
+    color: #28a745;
+}
+
+.fa-file-word {
+    color: #007bff;
+}
+
+.fa-file-excel {
+    color: #198754;
+}
+
+.fa-certificate {
+    color: #ffc107;
+}
+
+.fa-book {
+    color: #6f42c1;
+}
+
+.fa-file-alt {
+    color: #6c757d;
+}
+
+/* Responsive para archivos */
+@media (max-width: 768px) {
+    .file-item {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .file-item > i {
+        font-size: 1.5rem;
+        min-width: 30px;
+    }
+    
+    .file-name {
+        font-size: 0.95rem;
+    }
+    
+    .file-type {
+        font-size: 0.85rem;
+    }
+    
+    .file-details {
+        gap: 10px;
+    }
+    
+    .file-actions {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .file-action-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .file-item > i {
+        align-self: center;
+    }
+    
+    .file-info {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .file-actions {
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .file-action-btn {
+        flex: 1;
+    }
+}
+
+
+
+/* ===== ESTILOS PARA MODAL DE CONTRASEÑA ===== */
+
+.password-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.password-modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.password-modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.password-modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.password-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.password-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.password-modal-body {
+    padding: 30px 25px;
+}
+
+.password-modal-body p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.password-input-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.password-input-container input {
+    width: 100%;
+    padding: 15px 50px 15px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.password-input-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.password-error {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: var(--error-color);
+    background: rgba(231, 76, 60, 0.1);
+    padding: 12px 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--error-color);
+    font-size: 0.9rem;
+    margin-top: 10px;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 20%, 40%, 60%, 80% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+}
+
+.password-modal-footer {
+    padding: 20px 25px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.password-modal-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.password-modal-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.password-modal-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.password-modal-btn-secondary:hover:not(:disabled) {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.password-modal-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.password-modal-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive para el modal */
+@media (max-width: 480px) {
+    .password-modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .password-modal-header,
+    .password-modal-body,
+    .password-modal-footer {
+        padding: 20px;
+    }
+    
+    .password-modal-footer {
+        flex-direction: column;
+    }
+    
+    .password-modal-btn {
+        width: 100%;
+    }
+}
+
+/* Animación para el spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner.fa-spin {
+    animation: spin 1s linear infinite;
+}

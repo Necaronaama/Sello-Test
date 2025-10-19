@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Informacion EPR - En Construcción</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        .construction-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Elementos decorativos de fondo */
+        .construction-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: backgroundMove 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes backgroundMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .construction-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .construction-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .construction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .construction-icon {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+            animation: constructionPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes constructionPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .construction-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 120%;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .construction-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .construction-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .construction-message {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .construction-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            background: var(--background-color);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .progress-container {
+            background: var(--background-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #10b981);
+            border-radius: 5px;
+            width: 75%;
+            position: relative;
+            animation: progressGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes progressGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.8);
+            }
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .contact-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .contact-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .contact-item i {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .construction-card {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+
+            .construction-title {
+                font-size: 2.5rem;
+            }
+
+            .construction-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .construction-features {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .back-btn {
+                position: static;
+                margin-bottom: 2rem;
+                display: inline-flex;
+            }
+
+            .contact-details {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .construction-icon {
+                font-size: 4rem;
+            }
+
+            .construction-title {
+                font-size: 2rem;
+            }
+
+            .construction-subtitle {
+                font-size: 1rem;
+            }
+
+            .construction-card {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de regreso -->
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Volver al Inicio
+    </a>
+
+    <!-- Sección principal -->
+    <section class="construction-section">
+        <div class="construction-container">
+            <div class="construction-card">
+                <!-- Icono principal -->
+                <div class="construction-icon">
+                    <i class="fas fa-hard-hat"></i>
+                </div>
+
+                <!-- Título y subtítulo -->
+                <h1 class="construction-title">En Construcción</h1>
+                <p class="construction-subtitle">Estamos trabajando en algo increíble</p>
+
+                <!-- Mensaje principal -->
+                <div class="construction-message">
+                    <p>Esta sección del sistema <strong>QR Información EPR</strong> se encuentra actualmente en desarrollo. Nuestro equipo está trabajando arduamente para ofrecerte la mejor experiencia posible.</p>
+                </div>
+
+                <!-- Características en desarrollo -->
+                <div class="construction-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="feature-title">Nuevas Funcionalidades</div>
+                        <div class="feature-description">Implementando características avanzadas para mejorar la gestión de dispositivos</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="feature-title">Diseño Responsivo</div>
+                        <div class="feature-description">Optimizando la experiencia para todos los dispositivos móviles</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-title">Seguridad Mejorada</div>
+                        <div class="feature-description">Implementando las últimas medidas de seguridad y protección de datos</div>
+                    </div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="progress-container">
+                    <div class="progress-title">
+                        <i class="fas fa-chart-line"></i>
+                        Progreso del Desarrollo
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">75% Completado</div>
+                </div>
+
+                <!-- Información de contacto -->
+                <div class="contact-info">
+                    <div class="contact-title">
+                        <i class="fas fa-envelope"></i>
+                        ¿Necesitas ayuda?
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+56 9 1234 5678</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>soporte@carmona.net</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Lun - Vie: 9:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts para animaciones adicionales -->
+    <script>
+        // Animación de entrada suave
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.construction-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.8s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Animación de las características
+            const features = document.querySelectorAll('.feature-item');
+            features.forEach((feature, index) => {
+                feature.style.opacity = '0';
+                feature.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    feature.style.transition = 'all 0.6s ease-out';
+                    feature.style.opacity = '1';
+                    feature.style.transform = 'translateY(0)';
+                }, 300 + (index * 150));
+            });
+
+            // Animación de la barra de progreso
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.width = '0%';
+            
+            setTimeout(() => {
+                progressFill.style.transition = 'width 2s ease-out';
+                progressFill.style.width = '75%';
+            }, 800);
+        });
+
+        // Efecto de partículas flotantes (opcional)
+        function createFloatingParticles() {
+            const section = document.querySelector('.construction-section');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = 'rgba(255, 255, 255, 0.3)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${Math.random() * 10 + 10}s linear infinite`;
+                particle.style.pointerEvents = 'none';
+                
+                section.appendChild(particle);
+            }
+        }
+
+        // Crear partículas flotantes
+        createFloatingParticles();
+
+        // Estilo CSS para la animación de partículas
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% {
+                    transform: translateY(100vh) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

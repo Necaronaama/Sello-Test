@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+flask-cors
+qrcode[pil]
+gunicorn
+psycopg2-binary
+

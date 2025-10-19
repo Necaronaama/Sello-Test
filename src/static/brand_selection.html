@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Información EPR - Selección de Marca</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <style>
+        .brand-selection-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+        }
+
+        .brand-selection-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .brand-selection-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .brand-selection-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .brand-selection-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .brand-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative; /* Added for positioning delete button */
+        }
+
+        .brand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-color: #667eea;
+        }
+
+        .brand-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
+        }
+
+        .delete-brand-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .delete-brand-btn:hover {
+            opacity: 1;
+        }
+
+        .edit-brand-btn {
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            background: none;
+            border: none;
+            color: #007bff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-brand-btn:hover {
+            opacity: 1;
+        }
+
+        .qr-brand-btn {
+            position: absolute;
+            top: 10px;
+            right: 90px;
+            background: none;
+            border: none;
+            color: #28a745;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-brand-btn:hover {
+            opacity: 1;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .qr-container {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-code {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+
+        .brand-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-url {
+            color: #667eea;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            word-break: break-all;
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            background-color: #f8f9ff;
+            border-radius: 6px;
+            border: 1px solid #e8edff;
+            transition: all 0.3s ease;
+        }
+
+        .brand-url:hover {
+            background-color: #e8edff;
+            color: #5a67d8;
+        }
+
+        .brand-url i {
+            margin-right: 0.5rem;
+        }
+
+        .brand-image-container {
+            margin: 1rem 0;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 80px;
+        }
+
+        .brand-image {
+            max-width: 120px;
+            max-height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: block !important; /* Forzar que se muestre */
+        }
+
+        .brand-image-placeholder {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            min-height: 60px;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+
+        .select-brand-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .select-brand-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .new-brand-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .new-brand-btn:hover {
+            background: rgba(40, 167, 69, 1);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+	    /* limitar la altura y permitir scroll dentro */
+	    max-height: 90vh;
+	    overflow-y: auto;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading-state {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 3rem;
+        }
+
+        .loading-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .no-brands {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 3rem;
+        }
+
+        .no-brands i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .brand-selection-header h1 {
+                font-size: 2rem;
+            }
+            
+            .brands-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .brand-card {
+                padding: 1.5rem;
+            }
+            
+            .back-btn {
+                position: static;
+                margin-bottom: 2rem;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="logout()">
+        <i class="fas fa-arrow-left"></i>
+        Cerrar Sesión
+    </button>
+
+    <button class="new-brand-btn" onclick="showAddBrandModal()">
+        <i class="fas fa-plus"></i>
+        Ingresar Marca
+    </button>
+
+
+
+    <section class="brand-selection-section">
+        <div class="brand-selection-container">
+            <div class="brand-selection-header">
+                <h1><i class="fas fa-qrcode"></i> QR Información EPR</h1>
+                <p>Selecciona una marca para acceder al panel de administración</p>
+            </div>
+
+            <div id="loadingState" class="loading-state">
+                <div>
+                    <i class="fas fa-spinner"></i>
+                    <p>Cargando marcas disponibles...</p>
+                </div>
+            </div>
+
+            <div id="brandsContainer" class="brands-grid" style="display: none;">
+                <!-- Las marcas se cargarán aquí dinámicamente -->
+            </div>
+
+            <div id="noBrands" class="no-brands" style="display: none;">
+                <div>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No hay marcas disponibles en el sistema</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/brand_selection.js"></script>
+</body>
+</html>
+
+
+
+<!-- Modal para Ingresar Marca -->
+<div id="addBrandModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeAddBrandModal()">&times;</span>
+        <h2>Ingresar Nueva Marca</h2>
+        <form id="addBrandForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="newBrandName">Nombre de la Marca:</label>
+                <input type="text" id="newBrandName" name="newBrandName" required>
+            </div>
+            <div class="form-group">
+                <label for="brandUrl">URL de la Marca (opcional):</label>
+                <input type="url" id="brandUrl" name="brandUrl" placeholder="https://ejemplo.com">
+                <small style="color: #666; font-size: 0.9rem;">URL del sitio web de la marca</small>
+            </div>
+            <div class="form-group">
+                <label for="brandImage">Imagen de la Marca (opcional):</label>
+                <input type="file" id="brandImage" name="brandImage" accept="image/*">
+                <small style="color: #666; font-size: 0.9rem;">Formatos soportados: JPG, JPEG, PNG, GIF. Tamaño máximo: 5MB</small>
+            </div>
+            <div class="form-group">
+                <label for="brandUser">Usuario de Acceso:</label>
+                <input type="text" id="brandUser" name="brandUser" required>
+            </div>
+            <div class="form-group">
+                <label for="brandPassword">Contraseña de Acceso:</label>
+                <input type="password" id="brandPassword" name="brandPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Marca</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para Editar Marca -->
+<div id="editBrandModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeEditBrandModal()">&times;</span>
+        <h2>Editar Marca</h2>
+        <form id="editBrandForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="editBrandName">Nombre de la Marca:</label>
+                <input type="text" id="editBrandName" name="editBrandName" required>
+                <input type="hidden" id="originalBrandName" name="originalBrandName">
+            </div>
+            <div class="form-group">
+                <label for="editBrandUrl">URL de la Marca (opcional):</label>
+                <input type="url" id="editBrandUrl" name="editBrandUrl" placeholder="https://ejemplo.com">
+                <small style="color: #666; font-size: 0.9rem;">URL del sitio web de la marca</small>
+            </div>
+            <div class="form-group">
+                <label for="editBrandImage">Imagen de la Marca (opcional):</label>
+                <input type="file" id="editBrandImage" name="editBrandImage" accept="image/*">
+                <small style="color: #666; font-size: 0.9rem;">Formatos soportados: JPG, JPEG, PNG, GIF. Tamaño máximo: 5MB</small>
+            </div>
+            <div class="form-group">
+                <label for="editbrandUser">Usuario de Acceso:</label>
+                <input type="text" id="editbrandUser" name="editbrandUser" required>
+            </div>
+            <div class="form-group">
+                <label for="editbrandPassword">Contraseña de Acceso:</label>
+                <div style="position: relative;">
+                    <input type="password" id="editbrandPassword" name="editbrandPassword" required>
+                    <span class="password-toggle" onclick="togglePasswordVisibility(\'editbrandPassword\')">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar Marca</button>
+        </form>
+    </div>
+</div>
+
+
