@@ -24,11 +24,8 @@ app.config['SESSION_USE_SIGNER'] = True
 # Configuración para manejo de archivos
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB máximo
 # Configuración para manejo de archivos
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "/var/uploads")
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", os.path.join(os.path.dirname(__file__), 'static', 'uploads'))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Asegurar que el directorio de carga exista
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Configurar CORS para permitir requests del frontend
 CORS(app, supports_credentials=True)
