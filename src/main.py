@@ -96,5 +96,12 @@ def serve(path):
         else:
             return "index.html not found", 404
 
+@app.route('/test-save')
+def test_save():
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'test.txt')
+    with open(filepath, 'w') as f:
+        f.write("Probando disco persistente")
+    return f"Archivo guardado en {filepath}"
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
