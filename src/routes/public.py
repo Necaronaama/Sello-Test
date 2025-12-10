@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template_string, jsonify, request, send_from_directory
 from src.models.device import Device
+from src.models.device_doc import DeviceDoc
 import os
 
 public_bp = Blueprint('public', __name__)
@@ -315,6 +316,32 @@ def get_device_api(device_id):
     
     # Usar el método to_dict() del modelo que incluye todos los campos
     device_data = device.to_dict()
+    
+    # Importar DeviceDoc para buscar la información de documentación
+    from src.models.device_doc import DeviceDoc
+    
+    # Buscar la información de documentación
+    device_doc = DeviceDoc.query.filter_by(
+        marca=device.marca,
+        nombre_catalogo=device.nombre_catalogo,
+        modelo_comercial=device.modelo_comercial,
+        modelo_tecnico=device.modelo_tecnico
+    ).first()
+    
+    # Agregar los campos de device_doc a device_data si existen
+    if device_doc:
+        device_data['tecnologia_modulacion_doc'] = device_doc.tecnologia_modulacion_doc
+        device_data['frecuencias_doc'] = device_doc.frecuencias_doc
+        device_data['ganancia_antena_doc'] = device_doc.ganancia_antena_doc
+        device_data['pire_dbm_doc'] = device_doc.pire_dbm_doc
+        device_data['pire_mw_doc'] = device_doc.pire_mw_doc
+    else:
+        # Asegurar que los campos existen aunque estén vacíos
+        device_data['tecnologia_modulacion_doc'] = None
+        device_data['frecuencias_doc'] = None
+        device_data['ganancia_antena_doc'] = None
+        device_data['pire_dbm_doc'] = None
+        device_data['pire_mw_doc'] = None
     
     # Filtrar solo archivos públicos
     device_data['files'] = [file.to_dict() for file in device.files if file.visibility == 'public']

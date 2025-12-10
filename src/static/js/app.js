@@ -12,7 +12,19 @@ const API_BASE = '/api';
 document.addEventListener('DOMContentLoaded', function() {
     checkAuthStatus();
     setupEventListeners();
+    animateLoginCard(); // Nueva función para la animación de aparición
 });
+
+// Función para la animación de aparición de la tarjeta de login
+function animateLoginCard() {
+    const loginCard = document.querySelector('.login-card');
+    if (loginCard) {
+        // Usar setTimeout para asegurar que la clase se añada después de que el DOM esté listo
+        setTimeout(() => {
+            loginCard.classList.add('visible');
+        }, 50);
+    }
+}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -114,13 +126,20 @@ async function validateQRToken(token, brandName) {
 async function handleLogin(e) {
     e.preventDefault();
     
+    const loginButton = e.submitter;
+    const originalButtonContent = loginButton.innerHTML;
+    
+    // 1. Mostrar animación de progreso
+    loginButton.classList.add('loading');
+    loginButton.innerHTML = '<span class="spinner"></span>';
+
     const formData = new FormData(e.target);
     const loginData = {
         email: formData.get('email'),
         password: formData.get('password')
     };
 
-    showLoading(true);
+    // showLoading(true); // Reemplazado por la animación en el botón
 
     try {
         const response = await fetch(`${API_BASE}/auth/login`, {
@@ -154,7 +173,10 @@ async function handleLogin(e) {
         console.error('Login error:', error);
         showToast('Error de conexión', 'error');
     } finally {
-        showLoading(false);
+        // 2. Ocultar animación de progreso y restaurar botón
+        loginButton.classList.remove('loading');
+        loginButton.innerHTML = originalButtonContent;
+        // showLoading(false); // Reemplazado por la animación en el botón
     }
 }
 
@@ -180,6 +202,15 @@ function showLogin() {
     document.getElementById('dashboardSection').style.display = 'none';
     document.getElementById('deviceFormSection').style.display = 'none';
     document.getElementById('userInfo').style.display = 'none';
+    
+    // Asegurar que la tarjeta de login se anime al mostrar la sección
+    const loginCard = document.querySelector('.login-card');
+    if (loginCard) {
+        loginCard.classList.remove('visible'); // Resetear para la animación
+        setTimeout(() => {
+            loginCard.classList.add('visible');
+        }, 50);
+    }
 }
 
 function showDashboard() {
@@ -358,6 +389,15 @@ function renderFilteredDevices(filteredDevices) {
 
     grid.innerHTML = filteredDevices.map(device => `
         <div class="device-card" onclick="${currentUser && (currentUser.role === 'public' || currentUser.role === 'qr_guest') ? `openDeviceUrl('/static/public_device.html?id=${device.id}')` : ''}">
+	    <div class="device-header">
+	        <class="device-title">${device.nombre_catalogo}
+	    </div>
+            <div class="device-header">
+                <div class="device-subtitle">${device.categoria} - ${device.subcategoria}</div>
+	    </div>
+            <div class="device-image-container">
+                ${getDeviceImageHtml(device)}
+            </div>
             <div class="device-actions">
                 ${currentUser && (currentUser.role !== 'public' && currentUser.role !== 'qr_guest') ? `
                 <button class="btn btn-outline" onclick="openDeviceUrl('/static/public_device.html?id=${device.id}')" title="Ver Página Pública">
@@ -378,15 +418,6 @@ function renderFilteredDevices(filteredDevices) {
                 ` : ''}
 
             </div>
-	    <div class="device-header">
-	        <class="device-title">${device.nombre_catalogo}
-	    </div>
-            <div class="device-image-container">
-                ${getDeviceImageHtml(device)}
-            </div>
-            <div class="device-header">
-                <div class="device-subtitle">${device.categoria} - ${device.subcategoria}</div>
-	    </div>
         </div>
     `).join("");
 }
@@ -540,9 +571,26 @@ async function handleDeviceSubmit(e) {
         tecnologia_modulacion: formData.get("tecnologia_modulacion"),
         frecuencias: formData.get("frecuencias"),
         ganancia_antena: formData.get("ganancia_antena"),
-                pire_dbm: (formData.get("pire_dbm") === null || formData.get("pire_dbm") === '') ? 0.0 : parseFloat(formData.get("pire_dbm")),
+        pire_dbm: (formData.get("pire_dbm") === null || formData.get("pire_dbm") === '') ? 0.0 : parseFloat(formData.get("pire_dbm")),
         pire_mw: (formData.get("pire_mw") === null || formData.get("pire_mw") === '') ? 0.0 : parseFloat(formData.get("pire_mw"))
     };
+
+    // Datos específicos para la tabla device_doc
+    const deviceDocData = {
+        tecnologia_modulacion_doc: formData.get("tecnologia_modulacion_doc"),
+        frecuencias_doc: formData.get("frecuencias_doc"),
+        ganancia_antena_doc: formData.get("ganancia_antena_doc"),
+        pire_dbm_doc: formData.get("pire_dbm_doc"),
+        pire_mw_doc: formData.get("pire_mw_doc")
+    };
+
+    // Eliminar los campos _doc del objeto deviceData para evitar enviarlos al endpoint de devices
+    // Aunque no están en el snippet anterior, se añaden aquí para robustez si el formulario los incluye.
+    delete deviceData.tecnologia_modulacion_doc;
+    delete deviceData.frecuencias_doc;
+    delete deviceData.ganancia_antena_doc;
+    delete deviceData.pire_dbm_doc;
+    delete deviceData.pire_mw_doc;
 
     if (isEditing) {
         // For editing, include category, subcategory, and group if they are present in the form
@@ -571,6 +619,9 @@ async function handleDeviceSubmit(e) {
         if (response.ok) {
             const deviceId = isEditing ? editingDeviceId : result.id;
             
+            // Guardar o actualizar los datos de device_doc
+            await saveDeviceDocData(deviceId, deviceDocData);
+
             // Upload files if any
             await uploadDeviceFiles(deviceId, formData);
             showToast(isEditing ? 'Dispositivo actualizado exitosamente' : 'Dispositivo creado exitosamente', 'success');
@@ -583,6 +634,32 @@ async function handleDeviceSubmit(e) {
         showToast('Error de conexión al guardar dispositivo', 'error');
     } finally {
         showLoading(false);
+    }
+}
+
+// Nueva función para guardar los datos de device_doc
+async function saveDeviceDocData(deviceId, deviceDocData) {
+    try {
+        const url = `${API_BASE}/device_doc/${deviceId}`;
+        const method = 'PUT'; // Asumimos que siempre es una actualización o creación basada en el deviceId
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(deviceDocData)
+        });
+
+        if (!response.ok) {
+            const result = await response.json();
+            console.error('Error al guardar datos de device_doc:', result.error);
+            showToast('Advertencia: Error al guardar datos de documentación', 'warning');
+        }
+    } catch (error) {
+        console.error('Error de conexión al guardar datos de device_doc:', error);
+        showToast('Advertencia: Error de conexión al guardar datos de documentación', 'warning');
     }
 }
 
@@ -1192,7 +1269,7 @@ function showBrandIndicator(brandName) {
         styles.id = 'brandIndicatorStyles';
         styles.textContent = `
             .brand-indicator {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 padding: 1rem 2rem;
                 margin: 1rem 0;

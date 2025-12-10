@@ -9,7 +9,6 @@ if not exist %VENV_PATH%\Scripts\activate.bat (
 call %VENV_PATH%\Scripts\activate.bat
 
 pip install -r requirements.txt
-
+set UPLOAD_FOLDER=\Test\uploads
 python src/main.py
 pause
-

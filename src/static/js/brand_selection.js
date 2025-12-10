@@ -117,8 +117,9 @@ async function renderBrands() {
                 </button>
                 <div class="brand-name">${brand}</div>
                 <div class="qr-container">
-                    <div class="qr-code" id="qr-${brand.replace(/[^a-zA-Z0-9]/g, '')}"></div>
-                </div>
+	                <div class="qr-code" id="qr-${brand.replace(/[^a-zA-Z0-9]/g, '')}"></div>
+	                </div>
+	                <input type="text" value="${qrUrl}" readonly class="url-input" id="brandUrl${brand.replace(/[^a-zA-Z0-9]/g, '')}">
                 <div class="brand-image-container">
                     <img src="${brandImageUrl}" alt="" class="brand-image" 
                          onerror="handleImageError(this, '${brand}')">
@@ -229,21 +230,50 @@ async function generateQRWithToken(brandName, elementId) {
     }
 }
 
-// Función de respaldo para generar QR sin token
+// Función de respaldo para generar QR sin token (para renderBrands)
 function generateQRFallback(brandName, elementId) {
     try {
         const qrUrl = `${window.location.origin}/index.html?brand=${encodeURIComponent(brandName)}`;
-        const qr = qrcode(0, 'M');
-        qr.addData(qrUrl);
-        qr.make();
+        const qrCodeDataUrl = generateQRSync(qrUrl);
         
         const qrElement = document.getElementById(elementId);
         if (qrElement) {
-            qrElement.innerHTML = qr.createImgTag(4, 8);
+            // Crear imagen del QR
+            const img = document.createElement('img');
+            img.src = qrCodeDataUrl;
+            img.alt = `QR Code for ${brandName}`;
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            qrElement.innerHTML = '';
+            qrElement.appendChild(img);
         }
     } catch (error) {
         console.error('Error generating fallback QR code:', error);
     }
+}
+
+// Función síncrona para generar el QR y devolver el Data URL (reutilizable)
+function generateQRSync(url) {
+    // Crear un contenedor temporal para generar el QR
+    const tempDiv = document.createElement('div');
+    tempDiv.style.display = 'none';
+    document.body.appendChild(tempDiv);
+    
+    // Generar el código QR usando la librería qrcode-generator
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    
+    // Crear la imagen del QR
+    const qrImageTag = qr.createImgTag(4, 8);
+    tempDiv.innerHTML = qrImageTag;
+    const qrImg = tempDiv.querySelector('img');
+    const qrCodeDataUrl = qrImg.src;
+    
+    // Limpiar el contenedor temporal
+    document.body.removeChild(tempDiv);
+    
+    return qrCodeDataUrl;
 }
 
 // Seleccionar marca
@@ -273,29 +303,36 @@ async function logout() {
 
 // Función para mostrar el QR de una marca
 async function showBrandQR(brandName) {
+    let qrCodeDataUrl = '';
+    const brandUrl = `${window.location.origin}/index.html?brand=${encodeURIComponent(brandName)}`;
+
     try {
-        // Generar la URL de la marca
-        const brandUrl = `${window.location.origin}/index.html?brand=${encodeURIComponent(brandName)}`;
-        
-        // Crear un contenedor temporal para generar el QR
-        const tempDiv = document.createElement('div');
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-        
-        // Generar el código QR usando la librería qrcode-generator
-        const qr = qrcode(0, 'M');
-        qr.addData(brandUrl);
-        qr.make();
-        
-        // Crear la imagen del QR
-        const qrImageTag = qr.createImgTag(4, 8);
-        tempDiv.innerHTML = qrImageTag;
-        const qrImg = tempDiv.querySelector('img');
-        const qrCodeDataUrl = qrImg.src;
-        
-        // Limpiar el contenedor temporal
-        document.body.removeChild(tempDiv);
-        
+        // 1. Intentar obtener el QR con token del backend (mismo mecanismo que renderBrands)
+        const response = await fetch(`/api/brands/${encodeURIComponent(brandName)}/qr-with-token`, {
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            qrCodeDataUrl = data.qr_code;
+        } else {
+            // 2. Fallback: generar QR sin token si la llamada al backend falla
+            console.warn(`No se pudo obtener QR con token para ${brandName} para el modal, usando método tradicional.`);
+            qrCodeDataUrl = generateQRSync(brandUrl);
+        }
+    } catch (error) {
+        console.error('Error al obtener QR con token para el modal:', error);
+        // 3. Fallback: generar QR sin token si hay un error de red
+        qrCodeDataUrl = generateQRSync(brandUrl);
+    }
+
+    // Si por alguna razón no se pudo generar el QR, salir
+    if (!qrCodeDataUrl) {
+        console.error('No se pudo generar el código QR para el modal.');
+        return;
+    }
+    
+    try {
         // Crear modal para mostrar el QR
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
@@ -313,15 +350,7 @@ async function showBrandQR(brandName) {
                         <div class="qr-code-container">
                             <img src="${qrCodeDataUrl}" alt="Código QR de la Marca" class="qr-code-image">
                         </div>
-                        <div class="qr-url-info">
-                            <p><strong>URL de la marca:</strong></p>
-                            <div class="url-container">
-                                <input type="text" value="${brandUrl}" readonly class="url-input" id="brandUrl${brandName.replace(/[^a-zA-Z0-9]/g, '')}">
-                                <button class="btn btn-outline btn-sm" onclick="copyBrandUrlToClipboard('brandUrl${brandName.replace(/[^a-zA-Z0-9]/g, '')}')">
-                                    <i class="fas fa-copy"></i> Copiar
-                                </button>
-                            </div>
-                        </div>
+
                         <div class="qr-actions">
                             <button class="btn btn-primary" onclick="downloadBrandQR('${qrCodeDataUrl}', '${brandName}_QR')">
                                 <i class="fas fa-download"></i> Descargar QR

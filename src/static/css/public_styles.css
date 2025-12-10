@@ -194,8 +194,8 @@ body {
 .comments-section,
 .regulatory-section,
 .files-section {
-    margin-top: 30px;
-    padding-top: 20px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 2px solid var(--border-color);
 }
 
@@ -203,7 +203,7 @@ body {
 .regulatory-section h3,
 .files-section h3 {
     color: var(--primary-color);
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     font-size: 1.3rem;
     font-weight: 600;
 }
@@ -212,7 +212,7 @@ body {
 .regulatory-section p {
     background: var(--background-color);
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 2px;
     border-left: 4px solid var(--primary-color);
     line-height: 1.6;
 }

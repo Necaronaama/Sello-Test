@@ -8,6 +8,7 @@ from flask_cors import CORS
 from src.models.user import db
 from src.models.device import Device, DeviceFile  # Importar modelos para crear tablas
 from src.models.brand import Brand  # Importar modelo Brand
+from src.models.device_doc import DeviceDoc # Importar nuevo modelo device_doc
 from src.routes.user import user_bp
 from src.routes.auth import auth_bp
 from src.routes.devices import devices_bp

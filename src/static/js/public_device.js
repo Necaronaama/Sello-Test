@@ -154,20 +154,30 @@ async function displayDevice(device) {
   setElementText("deviceAddress", device.domicilio, "N/A", true);
   setElementText("deviceContactEmail", device.correo_contacto, "N/A", true);
 
-  // Información técnica (llenar campos y mostrar tarjeta si hay datos)
-  const hasTechnicalData = device.tecnologia_modulacion || device.frecuencias || 
-                          device.ganancia_antena || device.pire_dbm || device.pire_mw;
-  
-  if (hasTechnicalData) {
-    setElementText("deviceTechnology", device.tecnologia_modulacion, "dddd", false);
-    setElementText("deviceFrequencies", device.frecuencias, "dddd", false);
-    setElementText("deviceAntennaGain", device.ganancia_antena, "dddd", false);
-    setElementNumericText("devicePireDbm", device.pire_dbm, "dBm", "0.03 dBm", false);
-    setElementNumericText("devicePireMw", device.pire_mw, "mW", "0.06 mW", false);
-    
-    // Mostrar la tarjeta técnica
-    document.getElementById("technicalCard").style.display = "block";
-  }
+	    // Información técnica (llenar campos y mostrar tarjeta si hay datos)
+	  const hasTechnicalData = device.tecnologia_modulacion || device.frecuencias || 
+	                          device.ganancia_antena || device.pire_dbm || device.pire_mw ||
+	                          device.tecnologia_modulacion_doc || device.frecuencias_doc ||
+	                          device.ganancia_antena_doc || device.pire_dbm_doc || device.pire_mw_doc;
+	  
+	  if (hasTechnicalData) {
+	    // Campos de la izquierda (device)
+	    setElementText("deviceTechnology", device.tecnologia_modulacion, "N/A", false);
+	    setElementText("deviceFrequencies", device.frecuencias, "N/A", false);
+	    setElementText("deviceAntennaGain", device.ganancia_antena, "N/A", false);
+	    setElementNumericText("devicePireDbm", device.pire_dbm, "dBm", "N/A", false);
+	    setElementNumericText("devicePireMw", device.pire_mw, "mW", "N/A", false);
+	    
+	    // Campos de la derecha (device_doc)
+	    setElementText("deviceTechnologyDoc", device.tecnologia_modulacion_doc, "N/A", false);
+	    setElementText("deviceFrequenciesDoc", device.frecuencias_doc, "N/A", false);
+	    setElementText("deviceAntennaGainDoc", device.ganancia_antena_doc, "N/A", false);
+	    setElementText("devicePireDbmDoc", device.pire_dbm_doc, "N/A", false);
+	    setElementText("devicePireMwDoc", device.pire_mw_doc, "N/A", false);
+	    
+	    // Mostrar la tarjeta técnica
+	    document.getElementById("technicalCard").style.display = "block";
+	  }
 
   // Actualizar icono según categoría
   updateDeviceIcon(device.categoria);
