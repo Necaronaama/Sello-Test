@@ -201,6 +201,17 @@ def delete_device(device_id):
     device_marca = device.marca
     device_nombre_catalogo = device.nombre_catalogo
 
+    # Buscar y eliminar el registro asociado en DeviceDoc
+    device_doc = DeviceDoc.query.filter_by(
+        marca=device.marca,
+        nombre_catalogo=device.nombre_catalogo,
+        modelo_comercial=device.modelo_comercial,
+        modelo_tecnico=device.modelo_tecnico
+    ).first()
+    
+    if device_doc:
+        db.session.delete(device_doc)
+
     db.session.delete(device)
     db.session.commit()
 

@@ -350,7 +350,8 @@ def get_file_types():
         'diagrama_bloques',
         'ganancia_antena',
         'guia_usuario',
-        'otros_documentos'
+        'otros_documentos',
+        'imagen_tecnica'
     ]
     return jsonify(file_types)
 

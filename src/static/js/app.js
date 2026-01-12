@@ -342,31 +342,13 @@ function filterDevices() {
 }
 
 function getDeviceImageHtml(device) {
-    // Lógica simplificada para obtener la URL de la imagen en el dashboard
-    // Asumimos que la imagen de referencia está en device.imagen_de_referencia (si existe)
-    // o se puede construir una URL simple si el backend la proporciona.
-    // Si no, usamos un placeholder.
-    
-    let imageUrl = device.imagen_de_referencia || null;
+    // Buscar específicamente el archivo con file_type 'imagen_referencia'
+    let imageUrl = null;
 
-    // Si no hay una URL directa, intentamos construir una URL basada en la convención de public_device.js
-    // Esto es una simplificación, ya que la lógica completa es asíncrona y compleja.
-    // Para el dashboard, un placeholder es más seguro.
-    
-    // Si el dispositivo tiene un campo 'image_url' (como en public_device.js), lo usamos.
-    if (!imageUrl && device.image_url) {
-        imageUrl = device.image_url;
-    }
-
-    // Si el dispositivo tiene archivos y uno es una imagen, usamos el primero.
-    if (!imageUrl && device.files && device.files.length > 0) {
-        const imageFile = device.files.find(file => {
-            const fileName = (file.filename || "").toLowerCase();
-            const fileType = (file.file_type || "").toLowerCase();
-            return fileName.match(/\.(jpg|jpeg|png|gif)$/) || fileType.includes("image");
-        });
-        if (imageFile) {
-            imageUrl = imageFile.external_url || (imageFile.file_path ? `/api/files/${imageFile.id}` : null);
+    if (device.files && device.files.length > 0) {
+        const referenceImage = device.files.find(file => file.file_type === 'imagen_referencia');
+        if (referenceImage) {
+            imageUrl = referenceImage.external_url || (referenceImage.file_path ? `/api/files/${referenceImage.id}` : null);
         }
     }
 
@@ -946,6 +928,7 @@ function addFileInput() {
                     <select name="file_type_${fileIndex}" required>
                         <option value="">Seleccionar tipo</option>
                         <option value="imagen_referencia">Imagen de Referencia</option>
+                        <option value="imagen_tecnica">Imagen Técnica</option>
                         <option value="test_report">Test Report</option>
                         <option value="imagenes_externas">Imágenes Externas</option>
                         <option value="imagenes_internas">Imágenes Internas</option>

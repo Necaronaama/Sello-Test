@@ -205,6 +205,9 @@ async function displayDevice(device) {
   // Mostrar imagen de referencia si existe
   displayDeviceImage(device);
 
+  // Mostrar imagen técnica si existe
+  displayTechnicalImage(device);
+
   // Log para debugging - mostrar todos los datos recibidos
   console.log("Datos del dispositivo cargados:", device);
   console.log("Campos disponibles:", Object.keys(device));
@@ -214,40 +217,14 @@ async function displayDeviceImage(device) {
   const deviceImage = document.getElementById("deviceImage");
   const noImagePlaceholder = document.getElementById("noImagePlaceholder");
 
-  // Buscar imagen de referencia en los archivos del dispositivo
+  // Buscar específicamente el archivo con file_type 'imagen_referencia'
   let imageUrl = null;
 
-  // Verificar si hay una imagen en los archivos
   if (device.files && device.files.length > 0) {
-    const imageFile = device.files.find((file) => {
-      const fileName = (file.filename || "").toLowerCase();
-      const fileType = (file.file_type || "").toLowerCase();
-      return (
-        fileName.includes(".jpg") ||
-        fileName.includes(".jpeg") ||
-        fileName.includes(".png") ||
-        fileName.includes(".gif") ||
-        fileType.includes("image")
-      );
-    });
-
-    if (imageFile) {
-      if (imageFile.external_url) {
-        imageUrl = imageFile.external_url;
-      } else if (imageFile.file_path) {
-        imageUrl = `/api/files/${imageFile.id}`;
-      }
+    const referenceImage = device.files.find(file => file.file_type === 'imagen_referencia');
+    if (referenceImage) {
+      imageUrl = referenceImage.external_url || (referenceImage.file_path ? `/api/files/${referenceImage.id}` : null);
     }
-  }
-
-  // También verificar si hay una imagen específica del dispositivo
-  if (!imageUrl && device.image_url) {
-    imageUrl = device.image_url;
-  }
-
-  // Buscar cualquier imagen en la estructura de carpetas por marca y modelo
-  if (!imageUrl) {
-    imageUrl = await findDeviceImageInFolder(device);
   }
 
   if (imageUrl) {
@@ -272,6 +249,32 @@ async function displayDeviceImage(device) {
     // No hay imagen disponible, mostrar placeholder
     deviceImage.style.display = "none";
     noImagePlaceholder.style.display = "flex";
+  }
+}
+
+async function displayTechnicalImage(device) {
+  const technicalImage = document.getElementById("technicalImage");
+  const technicalImageContainer = document.getElementById("technicalImageContainer");
+
+  // Buscar específicamente el archivo con file_type 'imagen_tecnica'
+  let imageUrl = null;
+
+  if (device.files && device.files.length > 0) {
+    const techImageFile = device.files.find(file => file.file_type === 'imagen_tecnica');
+    if (techImageFile) {
+      imageUrl = techImageFile.external_url || (techImageFile.file_path ? `/api/files/${techImageFile.id}` : null);
+    }
+  }
+
+  if (imageUrl) {
+    technicalImage.src = imageUrl;
+    technicalImageContainer.style.display = "block";
+    
+    technicalImage.onerror = function() {
+      technicalImageContainer.style.display = "none";
+    };
+  } else {
+    technicalImageContainer.style.display = "none";
   }
 }
 
@@ -552,7 +555,20 @@ function getFileIcon(fileIdentifier) {
 
 function formatFileType(fileType) {
   if (!fileType) return "Desconocido";
-  return fileType.split("/").pop().toUpperCase();
+  
+  const types = {
+    'imagen_referencia': 'Imagen de Referencia',
+    'test_report': 'Test Report',
+    'imagenes_externas': 'Imágenes Externas',
+    'imagenes_internas': 'Imágenes Internas',
+    'diagrama_bloques': 'Diagrama de Bloques',
+    'ganancia_antena': 'Ganancia de Antena',
+    'guia_usuario': 'Guía de Usuario',
+    'otros_documentos': 'Otros Documentos',
+    'imagen_tecnica': 'Imagen Técnica'
+  };
+
+  return types[fileType] || fileType.split("/").pop().toUpperCase();
 }
 
 function formatFileSize(bytes) {
