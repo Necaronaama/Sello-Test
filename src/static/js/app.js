@@ -282,16 +282,7 @@ function showDeviceForm(deviceId = null) {
         loadCategoriesForNewDevice();
     }
     
-    // Configurar event listeners para el formulario
-    const categoriaSelect = document.getElementById("categoria");
-    const subcategoriaSelect = document.getElementById("subcategoria");
-    
-    if (categoriaSelect) {
-        categoriaSelect.addEventListener("change", loadCategoriesForForm);
-    }
-    //if (subcategoriaSelect) {
-    //    subcategoriaSelect.addEventListener("change", loadGroups);
-    //}
+    // Los event listeners ya están configurados mediante atributos 'onchange' en el HTML
 }
 
 function updateUserInfo() {
@@ -684,7 +675,23 @@ async function uploadDeviceFiles(deviceId, formData) {
         
         if (externalUrl) {
             uploadFormData.append('external_url', externalUrl);
-            uploadFormData.append('file_name', `Documento ${fileType}`);
+            
+            // Intentar extraer el nombre del archivo de la URL
+            let fileNameFromUrl = `Documento ${fileType}`;
+            try {
+                const urlParts = externalUrl.split('/');
+                let lastPart = urlParts.pop() || urlParts.pop();
+                if (lastPart) {
+                    const cleanName = lastPart.split(/[?#]/)[0];
+                    if (cleanName && cleanName.includes('.')) {
+                        fileNameFromUrl = cleanName;
+                    }
+                }
+            } catch (e) {
+                console.error("Error al extraer nombre de URL:", e);
+            }
+            
+            uploadFormData.append('file_name', fileNameFromUrl);
         }
         
         try {
@@ -830,10 +837,33 @@ function populateDeviceForm(device) {
 
 function renderExistingFiles(files) {
     const filesContainer = document.getElementById('filesContainer');
-    filesContainer.innerHTML = files.map(file => `
+    filesContainer.innerHTML = files.map(file => {
+        // Lógica para determinar el nombre a mostrar
+        let nameToDisplay = file.file_name || file.filename;
+        
+        if (!nameToDisplay && file.external_url) {
+            try {
+                const urlParts = file.external_url.split('/');
+                let lastPart = urlParts.pop() || urlParts.pop();
+                if (lastPart) {
+                    const cleanName = lastPart.split(/[?#]/)[0];
+                    if (cleanName && cleanName.includes('.')) {
+                        nameToDisplay = cleanName;
+                    }
+                }
+            } catch (e) {
+                console.error("Error al extraer nombre de URL:", e);
+            }
+        }
+        
+        if (!nameToDisplay) {
+            nameToDisplay = file.file_type ? file.file_type.replace('_', ' ').toUpperCase() : 'Archivo';
+        }
+
+        return `
         <div class="file-input-group">
             <div class="file-input-header">
-                <span class="file-input-title">${file.file_name}</span>
+                <span class="file-input-title">${nameToDisplay}</span>
                 <button type="button" class="btn btn-danger" onclick="deleteFile(${file.id})" title="Eliminar Archivo">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -862,7 +892,8 @@ function renderExistingFiles(files) {
                 ` : ''}
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 async function deleteDevice(deviceId) {

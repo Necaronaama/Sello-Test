@@ -480,7 +480,27 @@ function displayFiles(files) {
     // Priorizar el nombre real del archivo
     let nameToDisplay = file.file_name || file.filename || file.original_filename;
     
-    // Si no hay nombre pero hay ruta, extraerlo de la ruta
+    // Si no hay nombre pero hay una URL externa, intentar extraerlo de la URL
+    if (!nameToDisplay && file.external_url) {
+        try {
+            // Obtener la parte final de la URL después de la última barra
+            const urlParts = file.external_url.split('/');
+            let lastPart = urlParts.pop() || urlParts.pop(); // Manejar posibles barras finales
+            
+            // Eliminar parámetros de consulta (?...) o fragmentos (#...)
+            if (lastPart) {
+                const cleanName = lastPart.split(/[?#]/)[0];
+                // Solo usar si parece un nombre de archivo (tiene extensión)
+                if (cleanName && cleanName.includes('.')) {
+                    nameToDisplay = cleanName;
+                }
+            }
+        } catch (e) {
+            console.error("Error al extraer nombre de URL:", e);
+        }
+    }
+    
+    // Si no hay nombre pero hay ruta local, extraerlo de la ruta
     if (!nameToDisplay && file.file_path) {
         nameToDisplay = file.file_path.split(/[/\\]/).pop();
     }
