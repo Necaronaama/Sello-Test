@@ -6,8 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
 async function loadDeviceInfo() {
   const urlParams = new URLSearchParams(window.location.search);
   const deviceId = urlParams.get("id");
+  const deviceUid = urlParams.get("uid"); // CAMBIO: leer 'uid' en lugar de 'id'
 
-  if (!deviceId) {
+  if (!deviceId && !deviceUid) {
     showError();
     return;
   }
@@ -15,7 +16,13 @@ async function loadDeviceInfo() {
   try {
     // Agregar timestamp para evitar caché del navegador
     const timestamp = new Date().getTime();
-    const response = await fetch(`/api/device/${deviceId}?_t=${timestamp}`, {
+    
+    // Determinar el endpoint a usar
+    const endpoint = deviceUid 
+      ? `/api/device/by-uuid/${deviceUid}` 
+      : `/api/device/${deviceId}`;
+      
+    const response = await fetch(`${endpoint}?_t=${timestamp}`, {
       method: "GET",
       headers: {
         "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -464,50 +471,72 @@ function displayFiles(files) {
     const fileInfo = document.createElement("div");
     fileInfo.className = "file-info";
 
+    const fileMainInfo = document.createElement("div");
+    fileMainInfo.className = "file-main-info";
+
     const fileName = document.createElement("div");
     fileName.className = "file-name";
-    fileName.textContent = file.filename || `${index + 1} \u00A0 `;
+    
+    // Priorizar el nombre real del archivo
+    let nameToDisplay = file.file_name || file.filename || file.original_filename;
+    
+    // Si no hay nombre pero hay ruta, extraerlo de la ruta
+    if (!nameToDisplay && file.file_path) {
+        nameToDisplay = file.file_path.split(/[/\\]/).pop();
+    }
+    
+    // Si sigue sin haber nombre, usar el tipo de archivo o un genérico
+    if (!nameToDisplay) {
+        nameToDisplay = file.file_type ? formatFileType(file.file_type) : `Archivo ${index + 1}`;
+    }
+    
+    fileName.textContent = nameToDisplay;
 
-    const fileType = document.createElement("div");
-    fileType.className = "file-type";
+    const fileMetaRow = document.createElement("div");
+    fileMetaRow.className = "file-meta-row";
+
+    const fileType = document.createElement("span");
+    fileType.className = "file-type-badge";
     fileType.textContent = formatFileType(file.file_type);
 
     // Indicador de Password
-    const passwordIndicator = document.createElement("div");
-    passwordIndicator.className = "password-indicator";
+    const passwordIndicator = document.createElement("span");
+    passwordIndicator.className = "password-badge";
     if (file.requires_password) {
-      passwordIndicator.innerHTML = '<span class="badge badge-warning"><i class="fas fa-lock"></i> Password Habilitado</span>';
+      passwordIndicator.innerHTML = '<i class="fas fa-lock"></i> Protegido';
+      passwordIndicator.classList.add("protected");
     } else {
-      passwordIndicator.innerHTML = '<span class="badge badge-info"><i class="fas fa-lock-open"></i> Password No Habilitado</span>';
+      passwordIndicator.innerHTML = '<i class="fas fa-lock-open"></i> Público';
+      passwordIndicator.classList.add("public");
     }
 
     const fileDetails = document.createElement("div");
-    fileDetails.className = "file-details";
+    fileDetails.className = "file-extra-details";
 
-    // Mostrar fecha si está disponible
     if (file.upload_date || file.created_at) {
       const fileDate = document.createElement("span");
       fileDate.className = "file-date";
-      fileDate.textContent = `Fecha: ${formatDate(
-        file.upload_date || file.created_at
-      )}`;
+      fileDate.innerHTML = `<i class="far fa-calendar-alt"></i> ${formatDate(file.upload_date || file.created_at)}`;
       fileDetails.appendChild(fileDate);
     }
 
-    // Mostrar tamaño si está disponible
     if (file.file_size && file.file_size > 0) {
       const fileSize = document.createElement("span");
       fileSize.className = "file-size";
-      fileSize.textContent = `Tamaño: ${formatFileSize(file.file_size)}`;
+      fileSize.innerHTML = `<i class="fas fa-hdd"></i> ${formatFileSize(file.file_size)}`;
       fileDetails.appendChild(fileSize);
     }
 
-    fileInfo.appendChild(fileName);
-    fileInfo.appendChild(fileType);
-    fileInfo.appendChild(passwordIndicator);
+    fileMainInfo.appendChild(fileName);
+    
+    fileMetaRow.appendChild(fileType);
+    fileMetaRow.appendChild(passwordIndicator);
     if (fileDetails.children.length > 0) {
-      fileInfo.appendChild(fileDetails);
+        fileMetaRow.appendChild(fileDetails);
     }
+    
+    fileInfo.appendChild(fileMainInfo);
+    fileInfo.appendChild(fileMetaRow);
 
     // Botones de acción
     const fileActions = document.createElement("div");
