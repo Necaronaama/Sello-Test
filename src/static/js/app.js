@@ -466,6 +466,8 @@ async function loadCategoriesForForm(initialCategories = []) {
     const subcategoriaSelect = document.getElementById("subcategoria");
     const grupoSelect = document.getElementById("grupo");
 
+    if (!categoriaSelect) return;
+
     // Populate initial categories dropdown if provided
     if (initialCategories.length > 0 && categoriaSelect.options.length <= 1) { // Only populate if not already populated
         initialCategories.forEach(category => {
@@ -479,8 +481,8 @@ async function loadCategoriesForForm(initialCategories = []) {
     const selectedCategoria = categoriaSelect.value;
 
     // Reset subcategory and group
-    subcategoriaSelect.innerHTML = '<option value="">Seleccionar subcategoría</option>';
-    grupoSelect.innerHTML = '<option value="">Seleccionar grupo</option>';
+    if (subcategoriaSelect) subcategoriaSelect.innerHTML = '<option value="">Seleccionar subcategoría</option>';
+    if (grupoSelect) grupoSelect.innerHTML = '<option value="">Seleccionar grupo</option>';
 
     if (!selectedCategoria) return;
 
@@ -491,22 +493,31 @@ async function loadCategoriesForForm(initialCategories = []) {
 
         if (response.ok) {
             const subcategories = await response.json();
-            subcategories.forEach(subcategory => {
-                const option = document.createElement('option');
-                option.value = subcategory;
-                option.textContent = subcategory;
-                subcategoriaSelect.appendChild(option);
-            });
+            if (subcategoriaSelect) {
+                subcategories.forEach(subcategory => {
+                    const option = document.createElement('option');
+                    option.value = subcategory;
+                    option.textContent = subcategory;
+                    subcategoriaSelect.appendChild(option);
+                });
+            }
+            return subcategories;
         }
     } catch (error) {
         console.error('Error loading subcategories:', error);
     }
+    return [];
 }
 
 async function loadGroups() {
-    const categoria = document.getElementById('categoria').value;
-    const subcategoria = document.getElementById('subcategoria').value;
+    const categoriaElement = document.getElementById('categoria');
+    const subcategoriaElement = document.getElementById('subcategoria');
     const grupoSelect = document.getElementById('grupo');
+    
+    if (!categoriaElement || !subcategoriaElement || !grupoSelect) return;
+    
+    const categoria = categoriaElement.value;
+    const subcategoria = subcategoriaElement.value;
     
     // Reset group
     grupoSelect.innerHTML = '<option value="">Seleccionar grupo</option>';
@@ -526,10 +537,12 @@ async function loadGroups() {
                 option.textContent = group;
                 grupoSelect.appendChild(option);
             });
+            return groups;
         }
     } catch (error) {
         console.error('Error loading groups:', error);
     }
+    return [];
 }
 
 async function handleDeviceSubmit(e) {
@@ -777,28 +790,22 @@ function populateDeviceForm(device) {
     if (grupoField) grupoField.value = device.grupo || '';
     
     // Load categories for editing
-    loadCategoriesForNewDevice().then(() => {
+    loadCategoriesForNewDevice().then(async () => {
         // Set the category value after loading
         if (categoriaField && device.categoria) {
             categoriaField.value = device.categoria;
-            // Trigger change event to load subcategories
-            categoriaField.dispatchEvent(new Event('change'));
+            // Trigger loadCategoriesForForm manually to return a promise
+            await loadCategoriesForForm();
             
-            // Set subcategory after a brief delay
-            setTimeout(() => {
-                if (subcategoriaField && device.subcategoria) {
-                    subcategoriaField.value = device.subcategoria;
-                    // Trigger change event to load groups
-                    subcategoriaField.dispatchEvent(new Event('change'));
-                    
-                    // Set group after a brief delay
-                    setTimeout(() => {
-                        if (grupoField && device.grupo) {
-                            grupoField.value = device.grupo;
-                        }
-                    }, 100);
+            if (subcategoriaField && device.subcategoria) {
+                subcategoriaField.value = device.subcategoria;
+                // Trigger loadGroups manually to return a promise
+                await loadGroups();
+                
+                if (grupoField && device.grupo) {
+                    grupoField.value = device.grupo;
                 }
-            }, 100);
+            }
         }
     });
     
